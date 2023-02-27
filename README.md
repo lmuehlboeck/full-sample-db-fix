@@ -39,17 +39,17 @@ docker run --detach --name some-mariadb --env MARIADB_USER=example-user --env MA
 Der einzige Unterschied von diesem Befehl zum Compose-File ist die Definition eines Volumes. Der obige Befehl definiert gar kein Volume, das Docker-Compose-File definiert einen Bind Mount[1] von `./mysql` zu `/var/lib/mysql` im Container:
 
 ```yaml
-	volumes:
+volumes:
       - ./mysql:/var/lib/mysql
 ```
 
 ### Recherche
 
-Ein ähnliches Problem wurde bereits 2018 gemeldet, wobei der MariaDB-Container unter Windows nicht einmal gestartet ist [2]. Dies wurde 2020 laut Gihub-Issue jedoch gefixt.
+Ein ähnliches Problem wurde bereits 2018 gemeldet, wobei der MariaDB-Container unter Windows nicht einmal gestartet ist [2]. Dies wurde 2020 laut GitHub-Issue jedoch gefixt.
 
 Dasselbe 2020, ähnlicher Fehler, doch das Issue wurde wegen einem Fix geschlossen [3].
 
-Anfang 2022 wurde eine Frage auf StackOverflow mit dem Selben Error gestellt [4]. Lösungsvorschläge waren hier, WSL2 zu deaktivieren und Hyper-V zu verwenden oder auf eine ältere Version vom MariaDB Docker-Container zurückzugreifen. Beides nicht optimal [5].
+Anfang 2022 wurde eine Frage auf StackOverflow mit demselben Error gestellt [4]. Lösungsvorschläge waren hier, WSL2 zu deaktivieren und Hyper-V zu verwenden oder auf eine ältere Version vom MariaDB Docker-Container zurückzugreifen. Beides nicht optimal [5].
 
 ### Bind Mount einfach weglassen?
 
@@ -62,7 +62,7 @@ Da ein Bind Mount mit MariaDB unter Windows offenbar allgemein viele Probleme ve
 Im Docker-Compose-File wird dies einfach so umgesetzt:
 
 ```yaml
-	volumes:
+volumes:
       - mysql:/var/lib/mysql
 ```
 
