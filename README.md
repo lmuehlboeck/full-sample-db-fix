@@ -30,6 +30,32 @@ Um es nochmal zu erwähnen, dieser Fehler tritt nur auf Windows auf. Auf UNIX-Ba
 
 ## Lösungsweg
 
+Am Anfang haben wir uns jedoch auf falsche Error fokussiert:
+
+Zuvor hatte ich noch kurz die Idee, dass es an der Firewall lag, was jedoch schnell mithilfe des Source Commands von MariaDB für falsch erklärt wurde.
+Danach fokussiert ich mich auf diesen Fehler.
+
+```
+
+2023-02-23 14:12:47 Trying to get some variables.
+2023-02-23 14:12:47 Some pointers may be invalid and cause the dump to abort.
+2023-02-23 14:12:47 Query (0x7f09d001ce90): INSERT INTO flightdata.countries (code, name) VALUES ('AD', 'Andorra')
+2023-02-23 14:12:47 
+2023-02-23 14:12:47 Connection ID (thread ID): 3
+2023-02-23 14:12:47 Status: NOT_KILLED
+```
+Hier errort nicht MariaDB oder die Virtualmachine selbst, sondern der Coredump. Es wird nähmlich versucht den gesamten Ram zum Zeitpunkt des Crashes auf Disk zu writen. Da die Virtual-Machine jedoch abgestürtzt ist komplett und der Ram durch das Container-Problem onehin schon korrupted ist, sind einige der Pointer invalide.
+
+Das führte dazu, dass ich dachte das es an einem Ram-Problem liegt, um dies auf die schnelle zu testen machte ich einen Docker-Container rein in der CLI, ohne ein Ram Setting.
+
+```bash
+docker run -e MARIADB_ROOT_PASSWORD=mypassword mariadb
+```
+
+Da dies funktionierte war ich überzeugt, dass es am Ram lag und änderte die Parameter in der YAML-File, es funktionierte aber immer noch nicht. Zu diesem Zeitpunkt bat ich Leo Mühlböck zu Hilfe.
+
+Ab dann hat er das Problem herausgefunden.
+
 Durch einen Versuch den Fehler mit einem 2. Docker-Container zu reproduzieren wurde klar, dass das Problem am Volume liegt. Mit der folgenden Definition des MariaDB-Containers (ohne Docker-Compose, nur CLI) funktioniert das SQL-Script problemlos (aus der offiziellen Dokumentation):
 
 ```bash
